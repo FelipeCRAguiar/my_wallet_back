@@ -27,3 +27,24 @@ export async function signIn(req, res){
         res.sendStatus(500)
     }
 }
+
+export async function signUp(req, res) {
+    const user = req.body
+
+    try {
+        let registeredUsers = await db.collection('users').findOne({ "email": user.email})
+
+        if (registeredUsers) {
+            res.sendStatus(409)
+            return
+        }
+
+        const passwordHash = bcrypt.hashSync(user.password, 10)
+
+        await db.collection('users').insertOne({...user, password: passwordHash})
+
+        res.sendStatus(201)
+    } catch {
+        res.sendStatus(500)
+    }
+}
