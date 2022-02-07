@@ -12,3 +12,17 @@ export async function getTransactions(req, res) {
     }
 }
 
+export async function postTransaction(req, res) {
+    const user = res.locals.user
+
+    const transaction = req.body
+
+    try {
+        await db.collection('transactions').insertOne({...transaction, userId: user._id, date: Date.now()})
+
+        res.status(201).send(transaction)
+
+    } catch {
+        res.sendStatus(500)
+    }
+}
